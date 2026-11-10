@@ -1,0 +1,12 @@
+# приватные настройки
+env/config.js
+
+# сборки (генерируются скриптами из tools/)
+dist/
+deploy/
+
+# система
+Thumbs.db
+.DS_Store
+*.pyc
+__pycache__/
