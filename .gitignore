@@ -10,3 +10,8 @@ Thumbs.db
 .DS_Store
 *.pyc
 __pycache__/
+
+# рабочие заметки (скриншоты ошибок и т.п.)
+*.jpg
+*.jpeg
+*.png
