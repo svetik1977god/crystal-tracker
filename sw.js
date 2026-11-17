@@ -11,7 +11,8 @@ const PRECACHE = [
   './js/notify.js',
   './js/views.js',
   './js/app.js',
-  './env/config.js',
+  // env/config.js не прекэшируем: файла может не быть (он в .gitignore), а addAll
+  // падает целиком, если хоть один ресурс недоступен. Приложение работает и без него.
   './assets/icon.svg',
   './assets/icon-192.png',
   './assets/icon-512.png',
