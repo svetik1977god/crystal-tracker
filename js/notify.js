@@ -164,19 +164,31 @@ const Notify = (() => {
 
   function systemNotify(title, body, taskId) {
     if (permissionState() !== 'granted') return;
-    try {
-      const n = new Notification(title, {
-        body: body || '',
-        icon: 'assets/icon-192.png',
-        badge: 'assets/icon-192.png',
-        tag: 'crystal-' + (taskId || 'app'),
-        silent: true // звук/вибрацию обрабатываем сами
-      });
-      n.onclick = () => {
-        window.focus();
-        if (taskId) location.hash = '#/task/' + taskId;
-      };
-    } catch (e) {}
+    const opts = {
+      body: body || '',
+      icon: 'assets/icon-192.png',
+      badge: 'assets/icon-192.png',
+      tag: 'crystal-' + (taskId || 'app'),
+      silent: true, // звук/вибрацию обрабатываем сами
+      data: { url: taskId ? './#/task/' + taskId : './' }
+    };
+    // Запасной путь: конструктор из страницы (не работает на iOS)
+    const fallback = () => {
+      try {
+        const n = new Notification(title, opts);
+        n.onclick = () => {
+          window.focus();
+          if (taskId) location.hash = '#/task/' + taskId;
+        };
+      } catch (e) {}
+    };
+    // Основной путь: через сервис-воркер (работает и на iOS в установленном PWA)
+    if (!('serviceWorker' in navigator)) return fallback();
+    navigator.serviceWorker.getRegistration().then((reg) => {
+      if (reg && reg.showNotification) {
+        reg.showNotification(title, opts).catch(fallback);
+      } else fallback();
+    }).catch(fallback);
   }
 
   /* ---------- движок напоминаний ---------- */

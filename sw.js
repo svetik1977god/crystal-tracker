@@ -1,5 +1,5 @@
 /* Кристалл — Service Worker: precache + cache-first с фолбэком в сеть */
-const SW_VERSION = 'crystal-v1.4.3';
+const SW_VERSION = 'crystal-v1.4.4';
 const PRECACHE = [
   './',
   './index.html',
@@ -44,6 +44,20 @@ self.addEventListener('activate', (event) => {
         keys.filter((k) => k !== SW_VERSION).map((k) => caches.delete(k))
       ))
       .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const target = (event.notification.data && event.notification.data.url) || './';
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      // Если приложение уже открыто — фокусируем его
+      for (const c of list) {
+        if ('focus' in c) { c.navigate(target); return c.focus(); }
+      }
+      return clients.openWindow(target);
+    })
   );
 });
 
